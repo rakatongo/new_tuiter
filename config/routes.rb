@@ -1,6 +1,8 @@
 NewTuiter::Application.routes.draw do
   
   resources :users
+  resources :sessions, only: [:new, :create, :destroy]
+
 
   root :to => "static_pages#home"
   # Static pages
@@ -9,6 +11,9 @@ NewTuiter::Application.routes.draw do
   match 'contact', to: "static_pages#contact"
   # User pages
   match '/signup',  to: 'users#new'
+  # Sessions 
+  match '/signin', to: "sessions#new"
+  match '/signout', to: "sessions#destroy", via: :delete
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
