@@ -19,4 +19,8 @@ FactoryGirl.define do
 		password_confirmation "foobar"
       	admin true
     end
+    factory :micropost do
+    	content "Lorem ipsuM"
+    	user
+    end
 end

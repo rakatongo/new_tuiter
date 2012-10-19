@@ -50,11 +50,21 @@ describe "UserPages" do
   end
 
   describe "Profile pages" do
-    let(:user) { FactoryGirl.create(:user,email: "jej3@homa.com")}
+    let(:user) { FactoryGirl.create(:user)}
     before { visit user_path(user) }
     it { should have_selector('h1', text: user.name)}
     it { should have_selector('title', text: user.name)}
-  end
+
+    describe "micropost" do
+      let!(:m1){ FactoryGirl.create(:micropost, user: user, content: "Foo")}
+      let!(:m2){ FactoryGirl.create(:micropost, user: user, content: "Bar")}
+      
+      it{ should have_content(m1.content)}
+      it{ should have_content(m2.content)}
+      it{ should have_content(user.microposts.count)}
+
+    end
+  end #  <<<<<<<<< Profile pages
 
   describe "Edit Action" do
     let(:user) { FactoryGirl.create(:user)}
@@ -110,19 +120,21 @@ describe "UserPages" do
       before(:all) { 30.times { FactoryGirl.create(:user)}}
       after(:all){ User.delete_all }
       it "should list each user" do
-        User.all.each do |user|
-          page.should have_selector('li', text: user.name)
+        User.all.each do |usera|
+           page.should have_link(usera.name)
         end
       end    
     end
       #delete links
     describe "delete links" do
-      it { should_not have_link('delete')}
       let(:admin){ FactoryGirl.create(:admin)} 
       before do
         sign_in admin
         visit users_path
       end
+
+      it { should have_link('delete')}
+      
       describe "as admin user" do
         
         it "should see delete links" do
@@ -132,7 +144,7 @@ describe "UserPages" do
           expect { click_link 'delete'}.to change(User, :count).by(-1)
         end
 
-        it { should_not have_link('delete', user_path(admin.id))}
+        it { should_not have_selector('a', href: user_path(admin))}
 
       end
 
